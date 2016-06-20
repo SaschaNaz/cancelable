@@ -3,7 +3,6 @@ This proposal keeps the "third state" idea from [cancelable-promise](https://git
 
 ###### TODO
 - `chain` keyword is easy to confuse with normal promise `then` chain.
-- No `promise.cancel()` there while I thought there is. Chaining behavior on `CancelableChain` may be exposed to support this.
 
 ## API that kept
 
@@ -25,10 +24,12 @@ This proposal keeps the "third state" idea from [cancelable-promise](https://git
 - `new Promise((resolve, reject, chain) => { /* ... */ });`
 - `promise.chain(promise)`
 
-The following is the structure of `chain` object. 
+New `CancelableChain` object is passed to promise constructor callback. This object can store other promises and cancel them when its underlying promise gets canceled. Its constructor is exposed to make a standalone chain instead of Promise dependant one.
 
 ```
 interface CancelableChain {
+  constructor(): CancelableChain;
+
   /*
    * `chain()` stores cancelable promises and cancel them all
    * if its underlying promise gets canceled.
@@ -118,20 +119,20 @@ cancelable function inner() {
 `promise.chain(promise)` returns input promise so that promise.then can happen after chaining.
 
 ```js
-let c = new Promise();
-c.chain(fetch())
-  .then(() => c.chain(process()));
+let chain = new CancelableChain();
+chain(fetch())
+  .then(() => chain(process()));
 
-c.cancel();
+chain.cancel();
 ```
 
 This example with `.then()` works basically same as the following example.
 
-```
-let c = new Promise();
-c.chain(fetchAndProcess());
+```js
+let chain = new CancelableChain();
+chain(fetchAndProcess());
 
-c.cancel();
+chain.cancel();
 
 cancelable function fetchAndProcess() {
   chain fetch();
