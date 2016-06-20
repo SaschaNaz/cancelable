@@ -124,3 +124,17 @@ c.chain(fetch())
 
 c.cancel();
 ```
+
+This example with `.then()` works basically same as the following example.
+
+```
+let c = new Promise();
+c.chain(fetchAndProcess());
+
+c.cancel();
+
+cancelable function fetchAndProcess() {
+  chain fetch();
+  chain process();
+}
+```
