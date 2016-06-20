@@ -16,7 +16,7 @@ This proposal keeps the "third state" idea from [cancelable-promise](https://git
   - `cancel throw cancelation`
   - `generator.cancelThrow(cancelation)`
 
-## API Difference from [cancelable-promise](https://github.com/domenic/cancelable-promise)
+## Differences from [cancelable-promise](https://github.com/domenic/cancelable-promise)
 
 - `new Promise((resolve, reject, chain) => { /* ... */ });`
 - `promise.chain(promise)`
