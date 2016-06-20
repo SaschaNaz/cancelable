@@ -1,6 +1,9 @@
 # cancelable
 This proposal keeps the "third state" idea from [cancelable-promise](https://github.com/domenic/cancelable-promise) but tries removing additional argument for cancelation.
 
+###### TODO
+`chain` keyword is easy to confuse with normal promise `then` chain.
+
 ## API that kept
 
 >- Promise additions:
@@ -111,9 +114,12 @@ cancelable function inner() {
 
 ## Token style to chain style
 
-```js
-let cancelable = new Promise();
-cancelable.chain(fetch());
+`promise.chain(promise)` returns input promise so that promise.then can happen after chaining.
 
-cancelable.cancel();
+```js
+let c = new Promise();
+c.chain(fetch())
+  .then(() => c.chain(process()));
+
+c.cancel();
 ```
