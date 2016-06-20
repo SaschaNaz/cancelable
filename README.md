@@ -1,2 +1,119 @@
 # cancelable
-Alternative cancelable promise + function proposal for JavaScript
+This proposal keeps the "third state" idea from [cancelable-promise](https://github.com/domenic/cancelable-promise) but tries removing additional argument for cancelation.
+
+## API that kept
+
+>- Promise additions:
+  - ~~`new Promise((resolve, reject, cancel) => { ... })`~~
+  - `Promise.cancel(cancelation)`
+  - `promise.then(onFulfilled, onRejected, onCanceled)`
+  - `promise.cancelCatch(cancelation => { ... })`
+- Promise behavior changes:
+  - `Promise.all` will cancel its result upon the first canceled promise in the passed iterable.
+  - `Promise.race` will ignore canceled promises in the passed iterable, unless all of the promises become canceled, in which case it will return a promise canceled with an array of cancelations.
+- Language additions:
+  - `try { ... } cancel catch (cancelation) { ... }`
+  - `cancel throw cancelation`
+  - `generator.cancelThrow(cancelation)`
+
+## API Difference from [cancelable-promise](https://github.com/domenic/cancelable-promise)
+
+- `new Promise((resolve, reject, chain) => { /* ... */ });`
+- `promise.chain(promise)`
+
+The following is the structure of `chain` object. 
+
+```
+interface CancelableChain {
+  /*
+   * `chain()` stores cancelable promises and cancel them all
+   * if its underlying promise gets canceled.
+   */
+  (promise): void;
+
+  cancel(): void; // same as current `cancel` parameter to shorten the parameter list
+  
+  isCanceled: boolean; // true when underlying promise is canceled
+  whenCanceled: Promise<void>; // resolves when underlying promise gets canceled
+  /*
+   * throws CancelError when underlying promise gets canceled, otherwise returns nothing
+   */
+  throwIfCanceled: void;
+}
+```
+
+## Use
+
+```js
+function inner() {
+  return new Promise(async (resolve, reject, chain) => {
+    await a();
+    chain.throwIfCanceled();
+    await b();
+    resolve();
+  });
+}
+
+function outer() {
+  return new Promise(async (resolve, reject, chain) => {
+    await chain(inner()); // cancels inner() when parent promise gets canceled
+    resolve();
+  });
+}
+```
+
+```js
+function inner() {
+  return new Promise(async (resolve, reject, chain) => {
+    await a();
+    if (!chain.isCanceled) {
+      await b();
+    }
+    resolve();
+  });
+}
+```
+
+```js
+function inner() {
+  return new Promise(async (resolve, reject, chain) => {
+    chain.whenCanceled.then(() => reject());
+    await a();
+    resolve();
+  });
+}
+```
+
+## Syntax sugar
+
+A `cancelable function` has a new `chain` keyword in its function scope.
+
+```js
+cancelable function inner() {
+  await a();
+  chain.throwIfCanceled(); // chain as keyword, a form like `new.target`
+  await b();
+}
+
+cancelable function outer() {
+  chain inner(); // store inner() promise to cancellation chain
+}
+```
+
+```js
+cancelable function inner() {
+  await a();
+  if (!chain.isCanceled) { // chain as keyword
+    await b();
+  }
+}
+```
+
+## Token style to chain style
+
+```js
+let cancelable = new Promise();
+cancelable.chain(fetch());
+
+cancelable.cancel();
+```
