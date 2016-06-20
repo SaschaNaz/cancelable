@@ -2,7 +2,8 @@
 This proposal keeps the "third state" idea from [cancelable-promise](https://github.com/domenic/cancelable-promise) but tries removing additional argument for cancelation.
 
 ###### TODO
-`chain` keyword is easy to confuse with normal promise `then` chain.
+- `chain` keyword is easy to confuse with normal promise `then` chain.
+- No `promise.cancel()` there while I thought there is. Chaining behavior on `CancelableChain` may be exposed to support this.
 
 ## API that kept
 
