@@ -46,7 +46,7 @@ interface CancelableChain {
   throwIfCanceled: void;
   
   [[chainedPromises]]: Promise[]; // stored cancelable promises.
-  [[basePromise]]: underlying promise, undefined when standalone. `cancel()` cancels this if defined.
+  [[basePromise]]: Promise; // underlying promise, undefined when standalone. `cancel()` cancels this if defined.
 }
 ```
 
