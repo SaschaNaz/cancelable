@@ -22,7 +22,7 @@ This proposal keeps the "third state" idea from [cancelable-promise](https://git
 ## Differences from [cancelable-promise](https://github.com/domenic/cancelable-promise)
 
 - `new Promise((resolve, reject, chain) => { /* ... */ });`
-- `promise.chain(promise)`
+- `promise[@@cancel]`
 
 New `CancelableChain` object is passed to promise constructor callback. This object can store other promises and cancel them when its underlying promise gets canceled. Its constructor is exposed to make a standalone chain instead of Promise dependant one.
 
