@@ -38,7 +38,7 @@ interface CancelableChain {
 
   cancel(): void; // same as current `cancel` parameter to shorten the parameter list
   
-  isCanceled: boolean; // true when underlying promise is canceled
+  canceled: boolean; // true when underlying promise is canceled
   whenCanceled: Promise<void>; // resolves when underlying promise gets canceled
   /*
    * throws CancelError when underlying promise gets canceled, otherwise returns nothing
@@ -74,7 +74,7 @@ function outer() {
 function inner() {
   return new Promise(async (resolve, reject, chain) => {
     await a();
-    if (!chain.isCanceled) {
+    if (!chain.canceled) {
       await b();
     }
     resolve();
@@ -111,7 +111,7 @@ cancelable function outer() {
 ```js
 cancelable function inner() {
   await a();
-  if (!chain.isCanceled) { // chain as keyword
+  if (!chain.canceled) { // chain as keyword
     await b();
   }
 }
