@@ -31,7 +31,7 @@ interface CancelableChain {
   constructor(): CancelableChain;
 
   /*
-   * `chain()` stores cancelable promises and cancel them all
+   * `chain()` stores objects that supports `@@cancel` and call it
    * if its underlying promise gets canceled.
    */
   (promise): void;
