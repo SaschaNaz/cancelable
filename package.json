@@ -1,0 +1,29 @@
+{
+  "name": "cancelable",
+  "version": "0.0.1",
+  "description": "Alternative cancelable promise + function proposal for JavaScript",
+  "main": "lib/cancelable.js",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "jspm": "^0.16.46",
+    "systemjs": "^0.19.39"
+  },
+  "scripts": {
+    "test": "mocha tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SaschaNaz/cancelable.git"
+  },
+  "keywords": [
+    "cancelable"
+  ],
+  "author": "Kagami Sascha Rosylight <saschanaz@outlook.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SaschaNaz/cancelable/issues"
+  },
+  "homepage": "https://github.com/SaschaNaz/cancelable#readme"
+}
