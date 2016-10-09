@@ -11,7 +11,7 @@
     "systemjs": "^0.19.39"
   },
   "scripts": {
-    "pretest": "npm install jake -g; npm install typescript -g",
+    "pretest": "npm install jake -g; npm install typescript -g; npm install mocha -g",
     "test": "jake test"
   },
   "repository": {
