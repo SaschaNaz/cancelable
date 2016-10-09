@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "description": "Alternative cancelable promise + function proposal for JavaScript",
   "main": "lib/cancelable.js",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "chai": "^3.5.0",
+    "jake": "^8.0.14",
     "jspm": "^0.16.46",
     "systemjs": "^0.19.39"
   },
