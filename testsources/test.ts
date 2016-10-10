@@ -1,5 +1,4 @@
-//import * as chai from "chai";
-const chai = require("chai");
+import * as chai from "chai";
 
 describe("test", () => {
     it("should pass", () => {

@@ -8,9 +8,16 @@ var jakeAsyncTaskOptionBag = {
     async: true
 };
 
+desc("buildtest");
+task("buildtest", () => {
+    jake.exec(["tsc -p testsources/"], jakeExecOptionBag, () => {
+        complete();
+    });
+}, jakeAsyncTaskOptionBag);
+
 desc("test");
 task("test", () => {
-    jake.exec(["mocha tests"], jakeExecOptionBag, () => {
+    jake.exec(["mocha"], jakeExecOptionBag, () => {
         complete();
     });
 }, jakeAsyncTaskOptionBag);
