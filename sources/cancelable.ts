@@ -10,46 +10,51 @@ export interface CancelableChain {
 export class CancelableChain extends Function {
     private _chainedList: Cancelable[];
     private _base: Cancelable;
+    private _canceled: boolean;
 
     constructor() {
-        if (0) {
-            super();
-        }
+        super();
 
-        const cancelableChain = ((cancelable: Cancelable) => {
+        const cancelableChain = (async (cancelable: Cancelable) => {
             if (!cancelable || typeof (cancelable as any)[CancelSymbol] !== "function") {
                 throw new Error("")
             }
             const list = cancelableChain._chainedList;
             list.push(cancelable);
-            (async () => {
-                try {
-                    await cancelable;
+            
+            try {
+                await cancelable;
+            }
+            finally {
+                const index = list.indexOf(cancelable);
+                if (index === -1) {
+                    // may be already removed by cancel()
+                    return;
                 }
-                finally {
-                    const index = list.indexOf(cancelable);
-                    if (index === -1) {
-                        console.error("Error: cancelable was included in the cancelable chain but is now silently gone");
-                        return;
-                    }
-                    list.splice(index, 1);
-                }
-            })();
+                list.splice(index, 1);
+            }
         }) as any as CancelableChain;
 
         Object.setPrototypeOf(cancelableChain, CancelableChain.prototype);
 
         cancelableChain._chainedList = [];
+        cancelableChain._canceled = false;
 
         return cancelableChain;
     }
 
     cancel() {
-
+        this._canceled = true;
+        while (this._chainedList.length) {
+            const cancelable = this._chainedList.shift();
+            setTimeout(() => {
+                (cancelable as any)[CancelSymbol]();
+            }, 0);
+        }
     }
 
     get canceled() {
-        return true;
+        return this._canceled;
     }
 
     get whenCanceled() {
