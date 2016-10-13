@@ -1,4 +1,4 @@
-# cancelable ![Travis-CI build result](https://travis-ci.org/SaschaNaz/cancelable.svg?branch=master)
+# cancelable [![Travis-CI build result](https://travis-ci.org/SaschaNaz/cancelable.svg?branch=master)](https://travis-ci.org/SaschaNaz/cancelable)
 This proposal keeps the "third state" idea from [cancelable-promise](https://github.com/domenic/cancelable-promise) but tries removing additional argument for cancelation.
 
 ###### TODO

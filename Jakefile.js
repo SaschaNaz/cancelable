@@ -16,7 +16,7 @@ task("buildtest", () => {
 }, jakeAsyncTaskOptionBag);
 
 desc("test");
-task("test", ["buildtest"], () => {
+task("test", ["buildcommonjs", "buildtest"], () => {
     jake.exec(["mocha"], jakeExecOptionBag, () => {
         complete();
     });
