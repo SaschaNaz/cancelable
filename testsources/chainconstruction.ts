@@ -16,13 +16,15 @@ describe("CancelableChain", () => {
         chain.cancel();
         chai.assert(chain.canceled, ".canceled should be true");
     });
-    it("should error", async (done) => {
-        const chain = new CancelableChain();
-        try {
-            await chain({}); // not cancelable without [CancelSymbol]
-        }
-        catch (err) {
-            done();
-        }
+    it("should error", done => {
+        (async () => {
+            const chain = new CancelableChain();
+            try {
+                await chain({}); // not cancelable without [CancelSymbol]
+            }
+            catch (err) {
+                done();
+            }
+        })();
     })
 })
