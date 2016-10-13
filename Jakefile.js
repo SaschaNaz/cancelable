@@ -22,6 +22,32 @@ task("test", ["buildtest"], () => {
     });
 }, jakeAsyncTaskOptionBag);
 
+desc("buildnative");
+task("buildnative", () => {
+    jake.exec(["tsc -p sources/ -outDir built/native/"], jakeExecOptionBag, () => {
+        complete();
+    })
+}, jakeAsyncTaskOptionBag);
+
+desc("buildcommonjs");
+task("buildcommonjs", () => {
+    jake.exec(["tsc -p sources/ -module commonjs -outDir built/commonjs/"], jakeExecOptionBag, () => {
+        complete();
+    })
+}, jakeAsyncTaskOptionBag);
+
+desc("buildsystemjs");
+task("buildsystemjs", () => {
+    jake.exec(["tsc -p sources/ -module system -outDir built/systemjs/"], jakeExecOptionBag, () => {
+        complete();
+    })
+}, jakeAsyncTaskOptionBag);
+
+desc("build");
+task("build", ["buildnative", "buildcommonjs", "buildsystemjs"], () => {
+
+}, jakeAsyncTaskOptionBag);
+
 desc("default");
 task("default", () => {
 

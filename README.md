@@ -32,9 +32,9 @@ interface CancelableChain {
 
   /*
    * `chain()` stores objects that supports `@@cancel` and call it
-   * if its underlying promise gets canceled.
+   * if cancellation is requested.
    */
-  (promise): void;
+  (): void;
 
   cancel(): void; // same as current `cancel` parameter to shorten the parameter list
   
@@ -46,7 +46,6 @@ interface CancelableChain {
   throwIfCanceled: void;
   
   [[chainedPromises]]: Promise[]; // stored cancelable promises.
-  [[basePromise]]: Promise; // underlying promise, undefined when standalone. `cancel()` cancels this if defined.
 }
 ```
 
