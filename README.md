@@ -39,7 +39,7 @@ interface CancelableChain {
   cancel(): void; // same as current `cancel` parameter to shorten the parameter list
   
   canceled: boolean; // true when underlying promise is canceled
-  whenCanceled: Promise<void>; // resolves when underlying promise gets canceled
+  tillCanceled: Promise<void>; // resolves when underlying promise gets canceled
   /*
    * throws CancelError when underlying promise gets canceled, otherwise returns nothing
    */
@@ -84,7 +84,7 @@ function inner() {
 ```js
 function inner() {
   return new Promise(async (resolve, reject, chain) => {
-    chain.whenCanceled.then(() => reject());
+    chain.tillCanceled.then(() => reject());
     await a();
     resolve();
   });

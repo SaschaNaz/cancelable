@@ -26,5 +26,18 @@ describe("CancelableChain", () => {
                 done();
             }
         })();
+    });
+    it("should be called", done => {
+        const chain = new CancelableChain();
+        let canceled = false;
+        chai.assert(chain.tillCanceled instanceof Promise, "tillCanceled should exist");
+        chain.tillCanceled.then(() => {
+            chai.assert(canceled, "tillCanceled should be resolved after cancel() call");
+            done();
+        });
+        setTimeout(() => {
+            chain.cancel();
+            canceled = true;
+        }, 0);
     })
 })

@@ -11,6 +11,8 @@ export class CancelableChain extends Function {
     private _chainedList: Cancelable[];
     private _base: Cancelable;
     private _canceled: boolean;
+    private _tillCanceled: Promise<void>;
+    private _resolveTillCanceled: () => void;
 
     constructor() {
         super();
@@ -39,12 +41,16 @@ export class CancelableChain extends Function {
 
         cancelableChain._chainedList = [];
         cancelableChain._canceled = false;
+        cancelableChain._tillCanceled = new Promise<void>(resolve => {
+            cancelableChain._resolveTillCanceled = resolve;
+        });
 
         return cancelableChain;
     }
 
     cancel() {
         this._canceled = true;
+        this._resolveTillCanceled();
         while (this._chainedList.length) {
             const cancelable = this._chainedList.shift();
             setTimeout(() => {
@@ -57,8 +63,8 @@ export class CancelableChain extends Function {
         return this._canceled;
     }
 
-    get whenCanceled() {
-        return Promise.resolve();
+    get tillCanceled() {
+        return this._tillCanceled;
     }
 
     throwIfCanceled() {
