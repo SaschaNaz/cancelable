@@ -19,14 +19,13 @@ export class CancelableChain extends Function {
 
         const cancelableChain = (async (cancelable: Cancelable) => {
             if (!cancelable || typeof (cancelable as any)[CancelSymbol] !== "function") {
-                throw new Error("")
+                throw new Error("Only cancelables can be chained to CancelableChain.")
             }
             const list = cancelableChain._chainedList;
             list.push(cancelable);
-            
+
             try {
-                await cancelable;
-                // Problem: cancelablePromise.then constructs CancelablePromise -> constructs chain -> promise -> chain -> ...
+                return await cancelable;
             }
             finally {
                 const index = list.indexOf(cancelable);
@@ -78,7 +77,7 @@ export class CancelableChain extends Function {
 
 export class CancelablePromise<T> extends Promise<T> implements Cancelable {
     private _chain: CancelableChain;
-    private _rejectSuper: (error?: any) => void; 
+    private _rejectSuper: (error?: any) => void;
 
     constructor(init: (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: any) => void, chain: CancelableChain) => void) {
         type Resolver = (value?: T | PromiseLike<T>) => void;
@@ -96,8 +95,30 @@ export class CancelablePromise<T> extends Promise<T> implements Cancelable {
 
         init(resolveSuper, rejectSuper, this._chain); // TODO: what if chain.cancel() is called after reject()?
     }
-    
-    [CancelSymbol]() {
+
+    get [CancelSymbol]() {
+        return this.cancel;
+    }
+
+    cancel() {
         this._chain.cancel();
+        this._rejectSuper(new Cancel());
+    }
+}
+
+export class Cancel {
+    public message: string;  
+
+    constructor(message?: string) {
+        this.message = message;
+    }
+
+    toString() {
+        if (!this.message || !this.message.length) {
+            return "Cancel";
+        }
+        else {
+            return `Cancel: ${this.message}`;
+        }
     }
 }
