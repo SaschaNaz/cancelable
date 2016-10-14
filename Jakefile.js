@@ -49,6 +49,6 @@ task("build", ["buildnative", "buildcommonjs", "buildsystemjs"], () => {
 }, jakeAsyncTaskOptionBag);
 
 desc("default");
-task("default", () => {
+task("default", ["build"], () => {
 
 });
