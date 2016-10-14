@@ -45,4 +45,16 @@ describe("CancelablePromise", () => {
 
         promise2.cancel();
     });
+
+    it("should return correct value", done => {
+        const promise = new CancelablePromise<number>((resolve, reject, chain) => {
+            resolve(3);
+        });
+
+        const promise2 = new CancelablePromise(async (resolve, reject, chain) => {
+            const value = await chain(promise);
+            chai.assert(value === 3);
+            done();
+        });
+    });
 });
