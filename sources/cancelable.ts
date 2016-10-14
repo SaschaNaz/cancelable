@@ -26,6 +26,7 @@ export class CancelableChain extends Function {
             
             try {
                 await cancelable;
+                // Problem: cancelablePromise.then constructs CancelablePromise -> constructs chain -> promise -> chain -> ...
             }
             finally {
                 const index = list.indexOf(cancelable);
@@ -49,6 +50,9 @@ export class CancelableChain extends Function {
     }
 
     cancel() {
+        if (this._canceled) {
+            return;
+        }
         this._canceled = true;
         this._resolveTillCanceled();
         while (this._chainedList.length) {
@@ -72,24 +76,28 @@ export class CancelableChain extends Function {
     }
 }
 
-interface CancelableInternal {
-    chain: CancelableChain;
-}
-
 export class CancelablePromise<T> extends Promise<T> implements Cancelable {
-    private _internal: CancelableInternal;   
+    private _chain: CancelableChain;
+    private _rejectSuper: (error?: any) => void; 
 
-    constructor(init: (resolve: (value?: T | PromiseLike<T>) => Promise<void>, reject: (reason?: any) => Promise<void>, chain: CancelableChain) => void) {
-        const internal = {} as CancelableInternal;
-        
-        super((resolve: (value?: T | PromiseLike<T>) => void, reject: (error?: any) => void) => {
+    constructor(init: (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: any) => void, chain: CancelableChain) => void) {
+        type Resolver = (value?: T | PromiseLike<T>) => void;
+        type Rejector = (error?: any) => void;
+        let resolveSuper: Resolver;
+        let rejectSuper: Rejector;
 
+        super((resolve: Resolver, reject: Rejector) => {
+            resolveSuper = resolve;
+            rejectSuper = reject;
         });
 
-        this._internal = internal;
+        this._chain = new CancelableChain();
+        this._rejectSuper = rejectSuper;
+
+        init(resolveSuper, rejectSuper, this._chain); // TODO: what if chain.cancel() is called after reject()?
     }
     
     [CancelSymbol]() {
-        this._internal.chain
+        this._chain.cancel();
     }
 }
