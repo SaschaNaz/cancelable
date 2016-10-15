@@ -57,4 +57,21 @@ describe("CancelablePromise", () => {
             done();
         });
     });
+
+    it("should resolve tillCanceled by standalone cancellation chain", done => {
+        const chain = new CancelableChain();
+        let canceled = false;
+
+        const promise = new CancelablePromise((resolve, reject, chain) => {
+            chain.tillCanceled.then(() => {
+                chai.assert(canceled, "'canceled' value should be true");
+                chai.assert(chain.canceled, "chain status should be 'canceled'");
+                done();
+            });
+        })
+
+        chain(promise);
+        chain.cancel();
+        canceled = true;
+    })
 });
