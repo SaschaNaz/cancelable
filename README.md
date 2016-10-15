@@ -20,7 +20,7 @@ interface CancelableChain {
    * if cancellation is requested.
    */
   <T>(cancelable: CancelablePromise<T>): Promise<T>;
-  (cancelable: Cancelable): void;
+  (cancelable: Cancelable): Promise<void>;
 
   cancel(): void; // same as current `cancel` parameter to shorten the parameter list
   
