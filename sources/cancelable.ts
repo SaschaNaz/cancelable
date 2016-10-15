@@ -6,7 +6,7 @@ export class Cancelable { // TS hack to get Cancelable interface
 
 export interface CancelableChain {
     <T>(cancelable: CancelablePromise<T>): Promise<T>;
-    (cancelable: Cancelable): void;
+    (cancelable: Cancelable): Promise<void>;
 }
 export class CancelableChain extends Function {
     private _chainedList: Cancelable[];
@@ -21,6 +21,9 @@ export class CancelableChain extends Function {
         const cancelableChain = (async (cancelable: Cancelable) => {
             if (!cancelable || typeof (cancelable as any)[CancelSymbol] !== "function") {
                 throw new Error("Only cancelables can be chained to CancelableChain.")
+            }
+            if (cancelableChain._canceled) {
+                throw new Cancel();
             }
             const list = cancelableChain._chainedList;
             list.push(cancelable);

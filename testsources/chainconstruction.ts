@@ -5,6 +5,7 @@ describe("CancelableChain", () => {
     it("should be constructed successfully", () => {
         chai.assert(new CancelableChain() instanceof CancelableChain, "new CancelableChain() is instance of CancelableChain");
     });
+
     it("should use cancel symbol", (done) => {
         const stub = {
             [CancelSymbol]() {
@@ -16,6 +17,7 @@ describe("CancelableChain", () => {
         chain.cancel();
         chai.assert(chain.canceled, ".canceled should be true");
     });
+
     it("should error", done => {
         (async () => {
             const chain = new CancelableChain();
@@ -27,6 +29,7 @@ describe("CancelableChain", () => {
             }
         })();
     });
+
     it("should be called", done => {
         const chain = new CancelableChain();
         let canceled = false;
@@ -40,6 +43,7 @@ describe("CancelableChain", () => {
             canceled = true;
         }, 0);
     });
+
     it("should throw", done => {
         const chain = new CancelableChain();
         setTimeout(() => {
@@ -53,6 +57,7 @@ describe("CancelableChain", () => {
         })
         chain.cancel();
     });
+
     it("should not throw", done => {
         const chain = new CancelableChain();
         setTimeout(() => {
@@ -62,5 +67,33 @@ describe("CancelableChain", () => {
             }
             catch (err) { }
         })
+    });
+
+    it("should throw Cancel when cancellation is already requested", done => {
+        const chain = new CancelableChain();
+        const stub = {
+            [CancelSymbol]() { }
+        }
+
+        chain.cancel();
+        chai.assert(chain.canceled, "status should be 'canceled'");
+        (async () => {
+            try {
+                await chain(stub);
+            }
+            catch (c) {
+                chai.assert(c instanceof Cancel, "The thrown object should be an instance of Cancel");
+                done();
+            }
+        })();
+    })
+
+    it("should throw error when chaining an uncancelable object", done => {
+        const chain = new CancelableChain();
+
+        chain({} as any).catch(err => {
+            chai.assert(err instanceof Error);
+            done();
+        });
     });
 })
