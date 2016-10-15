@@ -19,7 +19,8 @@ interface CancelableChain {
    * `chain()` stores objects that supports `@@cancel` and call it
    * if cancellation is requested.
    */
-  (): void;
+  <T>(cancelable: CancelablePromise<T>): Promise<T>;
+  (cancelable: Cancelable): void;
 
   cancel(): void; // same as current `cancel` parameter to shorten the parameter list
   
