@@ -1,23 +1,8 @@
 # cancelable [![Travis-CI build result](https://travis-ci.org/SaschaNaz/cancelable.svg?branch=master)](https://travis-ci.org/SaschaNaz/cancelable)
-This proposal keeps the "third state" idea from [cancelable-promise](https://github.com/domenic/cancelable-promise) but tries removing additional argument for cancelation.
+This proposal tries replacing cancellation token from [cancelable-promise](https://github.com/domenic/cancelable-promise) with cancellation chain object, to achieve more automatic cancellation propagation.
 
 ###### TODO
-- `chain` keyword is easy to confuse with normal promise `then` chain.
-
-## API that kept
-
->- Promise additions:
-  - ~~`new Promise((resolve, reject, cancel) => { ... })`~~
-  - `Promise.cancel(cancelation)`
-  - `promise.then(onFulfilled, onRejected, onCanceled)`
-  - `promise.cancelCatch(cancelation => { ... })`
-- Promise behavior changes:
-  - `Promise.all` will cancel its result upon the first canceled promise in the passed iterable.
-  - `Promise.race` will ignore canceled promises in the passed iterable, unless all of the promises become canceled, in which case it will return a promise canceled with an array of cancelations.
-- Language additions:
-  - `try { ... } cancel catch (cancelation) { ... }`
-  - `cancel throw cancelation`
-  - `generator.cancelThrow(cancelation)`
+- `chain` keyword may be able to be confused with normal promise `then` chain.
 
 ## Differences from [cancelable-promise](https://github.com/domenic/cancelable-promise)
 
