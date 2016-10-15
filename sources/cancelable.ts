@@ -5,7 +5,7 @@ export class Cancelable { // TS hack to get Cancelable interface
 }
 
 export interface CancelableChain {
-    <T>(cancelable: CancelablePromise<T>): T;
+    <T>(cancelable: CancelablePromise<T>): Promise<T>;
     (cancelable: Cancelable): void;
 }
 export class CancelableChain extends Function {

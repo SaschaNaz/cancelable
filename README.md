@@ -33,6 +33,12 @@ interface CancelableChain {
   
   [[chainedList]]: Cancelable[]; // stored cancelables.
 }
+
+// A cancelable is an object that supports Symbol.cancel.
+interface Cancelable {
+  [@@cancel](): void;
+}
+interface Promise<T> extends Cancelable {}
 ```
 
 ## Use
