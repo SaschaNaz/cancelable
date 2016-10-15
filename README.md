@@ -31,7 +31,7 @@ interface CancelableChain {
    */
   throwIfCanceled: void;
   
-  [[chainedPromises]]: Promise[]; // stored cancelable promises.
+  [[chainedList]]: Cancelable[]; // stored cancelables.
 }
 ```
 
