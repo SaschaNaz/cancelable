@@ -1,5 +1,5 @@
 import * as chai from "chai";
-import { CancelSymbol, CancelableChain } from "../built/commonjs/cancelable";
+import { Cancel, CancelSymbol, CancelableChain } from "../built/commonjs/cancelable";
 
 describe("CancelableChain", () => {
     it("should be constructed successfully", () => {
@@ -39,5 +39,28 @@ describe("CancelableChain", () => {
             chain.cancel();
             canceled = true;
         }, 0);
-    })
+    });
+    it("should throw", done => {
+        const chain = new CancelableChain();
+        setTimeout(() => {
+            try {
+                chain.throwIfCanceled();
+            }
+            catch (c) {
+                chai.assert(c instanceof Cancel, "A cancel object should be instance of Cancel")
+                done();
+            }
+        })
+        chain.cancel();
+    });
+    it("should not throw", done => {
+        const chain = new CancelableChain();
+        setTimeout(() => {
+            try {
+                chain.throwIfCanceled();
+                done();
+            }
+            catch (err) { }
+        })
+    });
 })

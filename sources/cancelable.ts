@@ -71,8 +71,10 @@ export class CancelableChain extends Function {
         return this._tillCanceled;
     }
 
-    throwIfCanceled() {
-        throw new Error("Canceled");
+    throwIfCanceled(): void {
+        if (this._canceled) {
+            throw new Cancel();
+        }
     }
 }
 
