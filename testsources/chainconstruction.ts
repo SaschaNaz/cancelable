@@ -18,18 +18,6 @@ describe("CancelableChain", () => {
         chai.assert(chain.canceled, ".canceled should be true");
     });
 
-    it("should error", done => {
-        (async () => {
-            const chain = new CancelableChain();
-            try {
-                await chain({}); // not cancelable without [CancelSymbol]
-            }
-            catch (err) {
-                done();
-            }
-        })();
-    });
-
     it("should be called", done => {
         const chain = new CancelableChain();
         let canceled = false;
@@ -88,12 +76,21 @@ describe("CancelableChain", () => {
         })();
     })
 
-    it("should throw error when chaining an uncancelable object", done => {
+    it("should just pass an uncancelable object", done => {
         const chain = new CancelableChain();
 
-        chain({} as any).catch(err => {
-            chai.assert(err instanceof Error);
+        const o = {};
+        chain(o).then(pass => {
+            chai.assert(pass === o, "should be same object");
             done();
         });
+    });
+
+    it("should just pass null", done => {
+        (async () => {
+            const chain = new CancelableChain();
+            chai.assert(await chain(null) === null);
+            done();
+        })();
     });
 })
