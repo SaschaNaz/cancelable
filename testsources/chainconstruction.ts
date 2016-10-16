@@ -57,6 +57,19 @@ describe("CancelableChain", () => {
         })
     });
 
+    it("should throw error thrown by chained task", done => {
+        (async () => {
+            const chain = new CancelableChain();
+            try {
+                await chain(Promise.reject(new Error("wow")));
+            }
+            catch (err) {
+                chai.assert(err.message === "wow");
+                done();
+            }
+        })();
+    })
+
     it("should throw Cancel when cancellation is already requested", done => {
         const chain = new CancelableChain();
         const stub = {
@@ -99,6 +112,6 @@ describe("CancelableChain", () => {
             const chain = new CancelableChain();
             chai.assert(await chain(Promise.resolve(3)) === 3);
             done();
-        })()
+        })();
     })
 })

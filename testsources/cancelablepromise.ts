@@ -7,6 +7,7 @@ describe("CancelablePromise", () => {
             
         }).then(done);
     });
+
     it("should resolve 'tillCanceled'", done => {
         const promise = CancelablePromise.cancelable(async (chain) => {
             chain.tillCanceled.then(done);
@@ -19,6 +20,7 @@ describe("CancelablePromise", () => {
 
         promise2.cancel();
     });
+
     it("should return Cancel", done => {
         const promise = CancelablePromise.cancelable(async (chain) => {
             await new Promise(() => {});
@@ -56,6 +58,22 @@ describe("CancelablePromise", () => {
             const value = await chain(promise);
             chai.assert(value === 3);
             done();
+        });
+    });
+
+    it("should throw chained error", done => {
+        const promise = CancelablePromise.cancelable(async (chain) => {
+            throw new Error("homu");
+        });
+
+        const promise2 = CancelablePromise.cancelable(async (chain) => {
+            try {
+                const value = await chain(promise);
+            }
+            catch (err) {
+                chai.assert(err.message === "homu");
+                done();
+            }
         });
     });
 
