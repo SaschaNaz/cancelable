@@ -74,5 +74,30 @@ describe("CancelablePromise", () => {
         chain(promise);
         chain.cancel();
         canceled = true;
+    });
+
+    it("should be cancelable", () => {
+        const promise = CancelablePromise.cancelable(async (chain) => {
+            await new Promise(() => {});
+        })
+        chai.assert(promise.cancelable);
+        chai.assert(typeof (promise as any)[CancelSymbol] === "function", "should return cancel function");
+    })
+
+    it("should not be cancelable", () => {
+        const promise = new CancelablePromise(() => {});
+        chai.assert(!promise.cancelable);
+        chai.assert(typeof (promise as any)[CancelSymbol] === "undefined");
+    })
+
+    it("should throw when .cancel() is called on uncancelable promise", done => {
+        const promise = new CancelablePromise(() => {});
+        try {
+            promise.cancel();
+        }
+        catch (err) {
+            chai.assert(err instanceof Error);
+            done();
+        }
     })
 });
