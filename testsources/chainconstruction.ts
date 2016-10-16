@@ -93,4 +93,12 @@ describe("CancelableChain", () => {
             done();
         })();
     });
+
+    it("should pass promise wrapped value", done => {
+        (async () => {
+            const chain = new CancelableChain();
+            chai.assert(await chain(Promise.resolve(3)) === 3);
+            done();
+        })()
+    })
 })
