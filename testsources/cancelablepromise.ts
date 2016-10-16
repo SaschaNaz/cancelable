@@ -3,24 +3,25 @@ import { Cancel, CancelSymbol, CancelableChain, CancelablePromise } from "../bui
 
 describe("CancelablePromise", () => {
     it("should be resolved", done => {
-        const promise = new CancelablePromise((resolve, reject) => {
-            resolve();
+        const promise = CancelablePromise.cancelable(async (chain) => {
+            
         }).then(done);
     });
-    it("should be resolved", done => {
-        const promise = new CancelablePromise((resolve, reject, chain) => {
+    it("should resolve 'tillCanceled'", done => {
+        const promise = CancelablePromise.cancelable(async (chain) => {
             chain.tillCanceled.then(done);
+            await new Promise(() => {});
         });
 
-        const promise2 = new CancelablePromise(async (resolve, reject, chain) => {
+        const promise2 = CancelablePromise.cancelable(async (chain) => {
             await chain(promise);
         });
 
         promise2.cancel();
     });
     it("should return Cancel", done => {
-        const promise = new CancelablePromise((resolve, reject, chain) => {
-            
+        const promise = CancelablePromise.cancelable(async (chain) => {
+            await new Promise(() => {});
         });
         promise.catch(c => {
             chai.assert(c instanceof Cancel);
@@ -31,15 +32,15 @@ describe("CancelablePromise", () => {
     });
 
     it("should return Cancel", done => {
-        const promise = new CancelablePromise((resolve, reject, chain) => {
-            
+        const promise = CancelablePromise.cancelable(async (chain) => {
+            await new Promise(() => {});
         });
         promise.catch(c => {
             chai.assert(c instanceof Cancel);
             done();
         });
 
-        const promise2 = new CancelablePromise(async (resolve, reject, chain) => {
+        const promise2 = CancelablePromise.cancelable(async (chain) => {
             await chain(promise);
         });
 
@@ -47,11 +48,11 @@ describe("CancelablePromise", () => {
     });
 
     it("should return correct value", done => {
-        const promise = new CancelablePromise<number>((resolve, reject, chain) => {
-            resolve(3);
+        const promise = CancelablePromise.cancelable(async (chain) => {
+            return 3;
         });
 
-        const promise2 = new CancelablePromise(async (resolve, reject, chain) => {
+        const promise2 = CancelablePromise.cancelable(async (chain) => {
             const value = await chain(promise);
             chai.assert(value === 3);
             done();

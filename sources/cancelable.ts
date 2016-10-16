@@ -107,24 +107,6 @@ export class CancelablePromise<T> extends Promise<T> implements Cancelable {
         return promise;
     }
 
-    constructor(init: (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: any) => void, chain: CancelableChain) => void) {
-        type Resolver = (value?: T | PromiseLike<T>) => void;
-        type Rejector = (error?: any) => void;
-        let resolveSuper: Resolver;
-        let rejectSuper: Rejector;
-
-        super((resolve: Resolver, reject: Rejector) => {
-            resolveSuper = resolve;
-            rejectSuper = reject;
-        });
-
-        this._chain = new CancelableChain();
-        this._rejectSuper = rejectSuper;
-        this._cancelable = true; // temporarily set until deprecate this constructor
-
-        init(resolveSuper, rejectSuper, this._chain); // TODO: what if chain.cancel() is called after reject()?
-    }
-
     get [CancelSymbol]() {
         if (this._cancelable) {
             return this.cancel;
