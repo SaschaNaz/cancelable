@@ -83,6 +83,29 @@ export class CancelableChain extends Function {
 export class CancelablePromise<T> extends Promise<T> implements Cancelable {
     private _chain: CancelableChain;
     private _rejectSuper: (error?: any) => void;
+    private _cancelable: boolean;
+
+    static cancelable<T>(init: (chain: CancelableChain) => T | Promise<T>): CancelablePromise<T> {
+        if (!(init instanceof Function)) {
+            throw new Error("Input should be a function");
+        }
+
+        type Resolver = (value?: T | PromiseLike<T>) => void;
+        type Rejector = (error?: any) => void;
+
+        let rejectSuper: Rejector;
+        const chain = new CancelableChain();
+
+        const promise = new CancelablePromise<T>((resolve, reject) => {
+            rejectSuper = reject;
+            Promise.resolve(init(chain)).then(resolve, reject);
+        });
+        promise._cancelable = true;
+        promise._rejectSuper = rejectSuper;
+        promise._chain = chain;
+
+        return promise;
+    }
 
     constructor(init: (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: any) => void, chain: CancelableChain) => void) {
         type Resolver = (value?: T | PromiseLike<T>) => void;
@@ -97,12 +120,19 @@ export class CancelablePromise<T> extends Promise<T> implements Cancelable {
 
         this._chain = new CancelableChain();
         this._rejectSuper = rejectSuper;
+        this._cancelable = true; // temporarily set until deprecate this constructor
 
         init(resolveSuper, rejectSuper, this._chain); // TODO: what if chain.cancel() is called after reject()?
     }
 
     get [CancelSymbol]() {
-        return this.cancel;
+        if (this._cancelable) {
+            return this.cancel;
+        }
+    }
+
+    get cancelable() {
+        return !!this._cancelable;
     }
 
     cancel() {
@@ -112,7 +142,7 @@ export class CancelablePromise<T> extends Promise<T> implements Cancelable {
 }
 
 export class Cancel {
-    public message: string;  
+    public message: string;
 
     constructor(message?: string) {
         this.message = message;

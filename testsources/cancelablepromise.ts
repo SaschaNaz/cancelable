@@ -62,7 +62,7 @@ describe("CancelablePromise", () => {
         const chain = new CancelableChain();
         let canceled = false;
 
-        const promise = new CancelablePromise((resolve, reject, chain) => {
+        const promise = CancelablePromise.cancelable(async (chain) => {
             chain.tillCanceled.then(() => {
                 chai.assert(canceled, "'canceled' value should be true");
                 chai.assert(chain.canceled, "chain status should be 'canceled'");
