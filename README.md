@@ -6,7 +6,7 @@ This proposal tries replacing cancellation token from [cancelable-promise](https
 
 ## Differences from [cancelable-promise](https://github.com/domenic/cancelable-promise)
 
-- `new Promise((resolve, reject, chain) => { /* ... */ });`
+- `Promise.cancelable(async (chain) => { /* ... */ });`
 - `promise[@@cancel]`
 
 New `CancelableChain` object is passed to promise constructor callback. This object can store other promises and cancel them when its underlying promise gets canceled. Its constructor is exposed to make a standalone chain instead of Promise dependant one.
@@ -45,16 +45,15 @@ interface Promise<T> extends Cancelable {}
 
 ```js
 function inner() {
-  return new Promise(async (resolve, reject, chain) => {
+  return Promise.cancelable(async (chain) => {
     await a();
     chain.throwIfCanceled();
     await b();
-    resolve();
   });
 }
 
 function outer() {
-  return new Promise(async (resolve, reject, chain) => {
+  return Promise.cancelable(async (chain) => {
     await chain(inner()); // cancels inner() when parent promise gets canceled
     resolve();
   });
@@ -63,22 +62,20 @@ function outer() {
 
 ```js
 function inner() {
-  return new Promise(async (resolve, reject, chain) => {
+  return Promise.cancelable(async (chain) => {
     await a();
     if (!chain.canceled) {
       await b();
     }
-    resolve();
   });
 }
 ```
 
 ```js
 function inner() {
-  return new Promise(async (resolve, reject, chain) => {
+  return Promise.cancelable(async (chain) => {
     chain.tillCanceled.then(() => reject());
     await a();
-    resolve();
   });
 }
 ```
