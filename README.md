@@ -107,7 +107,7 @@ cancelable function inner() {
 
 ## Token style to chain style
 
-`promise.chain(promise)` returns input promise so that promise.then can happen after chaining.
+`chain(promise)` returns input promise so that promise.then can happen after chaining.
 
 ```js
 let chain = new CancelableChain();
