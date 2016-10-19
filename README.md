@@ -55,7 +55,6 @@ function inner() {
 function outer() {
   return Promise.cancelable(async (chain) => {
     await chain(inner()); // cancels inner() when parent promise gets canceled
-    resolve();
   });
 }
 ```
@@ -74,8 +73,9 @@ function inner() {
 ```js
 function inner() {
   return Promise.cancelable(async (chain) => {
-    chain.tillCanceled.then(() => reject());
-    await a();
+    const state = { foo: false }
+    chain.tillCanceled.then(() => state.foo = true);
+    await c(state);
   });
 }
 ```
