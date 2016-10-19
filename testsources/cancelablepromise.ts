@@ -100,13 +100,13 @@ describe("CancelablePromise", () => {
         })
         chai.assert(promise.cancelable);
         chai.assert(typeof (promise as any)[CancelSymbol] === "function", "should return cancel function");
-    })
+    });
 
     it("should not be cancelable", () => {
         const promise = new CancelablePromise(() => {});
         chai.assert(!promise.cancelable);
         chai.assert(typeof (promise as any)[CancelSymbol] === "undefined");
-    })
+    });
 
     it("should throw when .cancel() is called on uncancelable promise", done => {
         const promise = new CancelablePromise(() => {});
@@ -117,5 +117,40 @@ describe("CancelablePromise", () => {
             chai.assert(err instanceof Error);
             done();
         }
+    });
+
+    it("should cancel remaining tasks when resolved", done => {
+        let resolved = false;
+        const promise = CancelablePromise.cancelable(async (chain) => {
+            chain.tillCanceled.then(() => {
+                chai.assert(resolved, "should be called after resolved");
+                chai.assert(chain.canceled, "chain status should be 'canceled'");
+                done();
+            });
+            await new Promise(() => {});
+        })
+
+        const promise2 = CancelablePromise.cancelable(async (chain) => {
+            chain(promise);
+            resolved = true;
+        });
+    })
+
+    it("should cancel remaining tasks when rejected", done => {
+        let rejected = false;
+        const promise = CancelablePromise.cancelable(async (chain) => {
+            chain.tillCanceled.then(() => {
+                chai.assert(rejected, "should be called after rejected");
+                chai.assert(chain.canceled, "chain status should be 'canceled'");
+                done();
+            });
+            await new Promise(() => {});
+        })
+
+        const promise2 = CancelablePromise.cancelable(async (chain) => {
+            chain(promise);
+            rejected = true;
+            throw new Error("This error is a normal testing one");
+        });
     })
 });

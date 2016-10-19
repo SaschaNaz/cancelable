@@ -98,7 +98,13 @@ export class CancelablePromise<T> extends Promise<T> implements Cancelable {
 
         const promise = new CancelablePromise<T>((resolve, reject) => {
             rejectSuper = reject;
-            Promise.resolve(init(chain)).then(resolve, reject);
+            Promise.resolve(init(chain)).then(value => {
+                chain.cancel();
+                resolve(value);
+            }, error => {
+                chain.cancel();
+                reject(error);
+            });
         });
         promise._cancelable = true;
         promise._rejectSuper = rejectSuper;
