@@ -1,6 +1,6 @@
 {
   "name": "es-cancelable",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Alternative cancelable promise + function proposal for JavaScript",
   "main": "lib/cancelable.js",
   "dependencies": {},
