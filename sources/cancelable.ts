@@ -82,7 +82,6 @@ export class CancelableChain extends Function {
 
 export class CancelablePromise<T> extends Promise<T> implements Cancelable {
     private _chain: CancelableChain;
-    private _rejectSuper: (error?: any) => void;
     private _cancelable: boolean;
 
     static cancelable<T>(init: (chain: CancelableChain) => T | Promise<T>): CancelablePromise<T> {
@@ -93,11 +92,9 @@ export class CancelablePromise<T> extends Promise<T> implements Cancelable {
         type Resolver = (value?: T | PromiseLike<T>) => void;
         type Rejector = (error?: any) => void;
 
-        let rejectSuper: Rejector;
         const chain = new CancelableChain();
 
         const promise = new CancelablePromise<T>((resolve, reject) => {
-            rejectSuper = reject;
             Promise.resolve(init(chain)).then(value => {
                 chain.cancel();
                 resolve(value);
@@ -107,7 +104,6 @@ export class CancelablePromise<T> extends Promise<T> implements Cancelable {
             });
         });
         promise._cancelable = true;
-        promise._rejectSuper = rejectSuper;
         promise._chain = chain;
 
         return promise;
@@ -125,7 +121,6 @@ export class CancelablePromise<T> extends Promise<T> implements Cancelable {
 
     cancel() {
         this._chain.cancel();
-        this._rejectSuper(new Cancel());
     }
 }
 

@@ -21,9 +21,46 @@ describe("CancelablePromise", () => {
         promise2.cancel();
     });
 
-    it("should return Cancel", done => {
+    it("should return error thrown after cancellation", done => {
+        const message = "Custom error";
         const promise = CancelablePromise.cancelable(async (chain) => {
-            await new Promise(() => {});
+            await new Promise(resolve => setTimeout(resolve, 10));
+            if (chain.canceled) {
+                throw new Error(message)
+            }
+        });
+        promise.catch(c => {
+            chai.assert(c.message === message);
+            done();
+        });
+
+        promise.cancel();
+    });
+
+    it("should return error thrown after chained cancellation", done => {
+        const message = "Custom error";
+        const promise = CancelablePromise.cancelable(async (chain) => {
+            await new Promise(resolve => setTimeout(resolve, 10));
+            if (chain.canceled) {
+                throw new Error(message)
+            }
+        });
+        promise.catch(c => {
+            chai.assert(c.message === message);
+            done();
+        });
+
+        const promise2 = CancelablePromise.cancelable(async (chain) => {
+            await chain(promise);
+        });
+
+        promise2.cancel();
+    });
+
+    it("should return Cancel after cancellation", done => {
+        const promise = CancelablePromise.cancelable(async (chain) => {
+            await new Promise(resolve => setTimeout(resolve, 10));
+            chain.throwIfCanceled();
         });
         promise.catch(c => {
             chai.assert(c instanceof Cancel);
@@ -33,9 +70,10 @@ describe("CancelablePromise", () => {
         promise.cancel();
     });
 
-    it("should return Cancel", done => {
+    it("should return Cancel after chained cancellation", done => {
         const promise = CancelablePromise.cancelable(async (chain) => {
-            await new Promise(() => {});
+            await new Promise(resolve => setTimeout(resolve, 10));
+            chain.throwIfCanceled();
         });
         promise.catch(c => {
             chai.assert(c instanceof Cancel);
@@ -47,6 +85,15 @@ describe("CancelablePromise", () => {
         });
 
         promise2.cancel();
+    });
+
+    it("should not return Cancel when no cancellation process", done => {
+        const promise = CancelablePromise.cancelable(async (chain) => {
+            await new Promise(resolve => setTimeout(resolve, 10));
+        });
+        promise.then(done);
+
+        promise.cancel();
     });
 
     it("should return correct value", done => {
