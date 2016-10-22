@@ -9,7 +9,7 @@ This proposal tries replacing cancellation token from [cancelable-promise](https
 - `Promise.cancelable(async (chain) => { /* ... */ });`
 - `promise[@@cancel]`
 
-New `CancelableChain` object is passed to promise constructor callback. This object can store other promises and cancel them when its underlying promise gets canceled. Its constructor is exposed to make a standalone chain instead of Promise dependant one.
+New `CancelableChain` object is passed to `Promise.cancelable` input callback. This object can store other promises and cancel them when its underlying promise gets canceled. Its constructor is exposed to make a standalone chain instead of Promise dependant one.
 
 ```ts
 interface CancelableChain {
