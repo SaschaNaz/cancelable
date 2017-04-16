@@ -99,19 +99,13 @@ describe("CancelableChain", () => {
         });
     });
 
-    it("should just pass null", done => {
-        (async () => {
-            const chain = new CancelableChain();
-            chai.assert(await chain(null) === null);
-            done();
-        })();
+    it("should just pass null", async () => {
+        const chain = new CancelableChain();
+        chai.assert(await chain(null) === null);
     });
 
-    it("should pass promise wrapped value", done => {
-        (async () => {
-            const chain = new CancelableChain();
-            chai.assert(await chain(Promise.resolve(3)) === 3);
-            done();
-        })();
+    it("should pass promise wrapped value", async () => {
+        const chain = new CancelableChain();
+        chai.assert(await chain(Promise.resolve(3)) === 3);
     })
 })
