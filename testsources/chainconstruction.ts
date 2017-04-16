@@ -70,7 +70,7 @@ describe("CancelableChain", () => {
         })();
     })
 
-    it("should throw Cancel when cancellation is already requested", done => {
+    it("should throw Cancel after cancelation", done => {
         const chain = new CancelableChain();
         const stub = {
             [CancelSymbol]() { }
@@ -87,7 +87,62 @@ describe("CancelableChain", () => {
                 done();
             }
         })();
-    })
+    });
+
+    it("should throw Cancel after cancelation when receiving non-cancelable non-Promise", done => {
+        const chain = new CancelableChain();
+        chain.cancel();
+
+        (async () => {
+            try {
+                await chain(3);
+            }
+            catch (c) {
+                chai.assert(c instanceof Cancel, "The thrown object should be an instance of Cancel");
+                done();
+            }
+        })().catch(done);
+    });
+
+    it("should throw Cancel after cancelation when receiving Promise", done => {
+        const chain = new CancelableChain();
+        chain.cancel();
+        let foo = 0;
+
+        (async () => {
+            try {
+                await chain(new Promise(resolve => {
+                    foo = 3;
+                    resolve();
+                }));
+            }
+            catch (c) {
+                chai.assert(foo === 3);
+                chai.assert(c instanceof Cancel, "The thrown object should be an instance of Cancel");
+                done();
+            }
+        })().catch(done);
+    });
+
+    it("should throw non-Cancel even after cancelation", done => {
+        const chain = new CancelableChain();
+        chain.cancel();
+        let foo = 0;
+
+        (async () => {
+            try {
+                await chain(new Promise((resolve, reject) => {
+                    foo = 3;
+                    reject("Gourai");
+                }));
+            }
+            catch (e) {
+                chai.assert(foo === 3);
+                chai.assert(e === "Gourai")
+                done();
+            }
+        })().catch(done);
+    });
 
     it("should just pass an uncancelable object", done => {
         const chain = new CancelableChain();
@@ -95,7 +150,7 @@ describe("CancelableChain", () => {
         const o = {};
         chain(o).then(pass => {
             chai.assert(pass === o, "should be same object");
-            done();
+            done(); // this line must run
         });
     });
 
@@ -107,5 +162,5 @@ describe("CancelableChain", () => {
     it("should pass promise wrapped value", async () => {
         const chain = new CancelableChain();
         chai.assert(await chain(Promise.resolve(3)) === 3);
-    })
+    });
 })

@@ -17,26 +17,40 @@ export class CancelableChain extends Function {
     constructor() {
         super();
 
-        const cancelableChain = (async (cancelable: Cancelable) => {
-            if (!cancelable || typeof (cancelable as any)[CancelSymbol] !== "function") {
-                return cancelable; // do nothing for uncancelable objects
+        const cancelableChain = (async (input: any) => {
+            function checkPromiseLike(x: any): x is PromiseLike<any> {
+                return x != null && typeof x.then === "function";
             }
-            if (cancelableChain._canceled) {
-                throw new Cancel();
+            function checkCancelable(x: any): x is Cancelable {
+                return x != null && typeof x[CancelSymbol] === "function";
+            }
+
+            const isCancelable = checkCancelable(input)
+
+            if (!checkPromiseLike(input)) {
+                cancelableChain.throwIfCanceled();
+                if (!isCancelable) {
+                    return input; // do nothing for uncancelable objects
+                }
             }
             const list = cancelableChain._chainedList;
-            list.push(cancelable);
+            if (isCancelable) {
+                list.push(input);
+            }
 
             try {
-                return await cancelable;
+                const result = await input;
+                cancelableChain.throwIfCanceled();
+                return result;
             }
             finally {
-                const index = list.indexOf(cancelable);
-                if (index === -1) {
-                    // may be already removed by cancel()
-                    return;
+                if (isCancelable) {
+                    const index = list.indexOf(input);
+                    // may be already removed by cancel() if -1
+                    if (index !== -1) {
+                        list.splice(index, 1);
+                    }
                 }
-                list.splice(index, 1);
             }
         }) as any as CancelableChain;
 
