@@ -1,5 +1,5 @@
 import * as chai from "chai";
-import { Cancel, CancelSymbol, CancelableChain } from "../built/commonjs/cancelable";
+import { Cancel, CancelSymbol, CancelableChain } from "../built/commonjs/cancelable.js";
 
 describe("CancelableChain", () => {
     it("should be constructed successfully", () => {
