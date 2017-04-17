@@ -1,8 +1,8 @@
 {
-  "name": "es-cancelable",
-  "version": "0.1.0",
+  "name": "sn-cancelable",
   "description": "Alternative cancelable promise + function proposal for JavaScript",
   "main": "lib/cancelable.js",
+  "typings": "lib/cancelable.d.ts",
   "dependencies": {},
   "devDependencies": {
     "@types/chai": "^3.4.34",
@@ -25,5 +25,6 @@
   "bugs": {
     "url": "https://github.com/SaschaNaz/cancelable/issues"
   },
-  "homepage": "https://github.com/SaschaNaz/cancelable#readme"
+  "homepage": "https://github.com/SaschaNaz/cancelable#readme",
+  "version": "0.1.1"
 }
