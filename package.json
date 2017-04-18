@@ -1,6 +1,6 @@
 {
   "name": "sn-cancelable",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Alternative cancelable promise + function proposal for JavaScript",
   "main": "lib/commonjs/cancelable.js",
   "typings": "lib/commonjs/cancelable.d.ts",
