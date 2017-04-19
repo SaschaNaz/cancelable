@@ -1,52 +1,48 @@
 var jakeExecOptionBag = {
     printStdout: true,
-    printStderr: true,
-    breakOnError: true
+    printStderr: true
 };
 
-var jakeAsyncTaskOptionBag = {
-    async: true
-};
+function asyncExec(cmds) {
+    return new Promise((resolve, reject) => {
+        try {
+            jake.exec(cmds, () => resolve(), jakeExecOptionBag)
+        }
+        catch (e) {
+            reject(e);
+        }
+    });
+}
 
 desc("buildtest");
-task("buildtest", () => {
-    jake.exec(["tsc -p testsources/"], jakeExecOptionBag, () => {
-        complete();
-    });
-}, jakeAsyncTaskOptionBag);
+task("buildtest", async () => {
+    await asyncExec(["tsc -p testsources/"]);
+});
 
 desc("test");
-task("test", ["buildcommonjs", "buildtest"], () => {
-    jake.exec(["mocha"], jakeExecOptionBag, () => {
-        complete();
-    });
-}, jakeAsyncTaskOptionBag);
+task("test", ["buildcommonjs", "buildtest"], async () => {
+    await asyncExec(["mocha"]);
+});
 
 desc("buildnative");
-task("buildnative", () => {
-    jake.exec(["tsc -p sources/ -outDir built/native/"], jakeExecOptionBag, () => {
-        complete();
-    })
-}, jakeAsyncTaskOptionBag);
+task("buildnative", async () => {
+    await asyncExec(["tsc -p sources/ -outDir built/native/"]);
+});
 
 desc("buildcommonjs");
-task("buildcommonjs", () => {
-    jake.exec(["tsc -p sources/ -module commonjs -outDir built/commonjs/"], jakeExecOptionBag, () => {
-        complete();
-    })
-}, jakeAsyncTaskOptionBag);
+task("buildcommonjs", async () => {
+    await asyncExec(["tsc -p sources/ -module commonjs -outDir built/commonjs/"]);
+});
 
 desc("buildsystemjs");
-task("buildsystemjs", () => {
-    jake.exec(["tsc -p sources/ -module system -outDir built/systemjs/"], jakeExecOptionBag, () => {
-        complete();
-    })
-}, jakeAsyncTaskOptionBag);
+task("buildsystemjs", async () => {
+    await asyncExec(["tsc -p sources/ -module system -outDir built/systemjs/"]);
+});
 
 desc("build");
 task("build", ["buildnative", "buildcommonjs", "buildsystemjs"], () => {
 
-}, jakeAsyncTaskOptionBag);
+});
 
 desc("default");
 task("default", ["build"], () => {
