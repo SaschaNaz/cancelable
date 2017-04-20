@@ -1,3 +1,6 @@
+const ignore = require("ts-module-ignore").default;
+const mz = require("mz/fs");
+
 var jakeExecOptionBag = {
     printStdout: true,
     printStderr: true
@@ -24,6 +27,17 @@ task("test", ["buildcommonjs", "buildtest"], async () => {
     await asyncExec(["mocha"]);
 });
 
+desc("buildglobal");
+task("buildglobal", async () => {
+    await ignore("sources/cancelable.ts", "temp/cancelable.ts");
+    await mz.writeFile("temp/tsconfig.json", await mz.readFile("sources/tsconfig.json"));
+    await asyncExec(["tsc -p temp/ -outDir built/global/"]);
+
+    await mz.unlink("temp/tsconfig.json");
+    await mz.unlink("temp/cancelable.ts");
+    await mz.rmdir("temp/")
+});
+
 desc("buildnative");
 task("buildnative", async () => {
     await asyncExec(["tsc -p sources/ -outDir built/native/"]);
@@ -40,7 +54,7 @@ task("buildsystemjs", async () => {
 });
 
 desc("build");
-task("build", ["buildnative", "buildcommonjs", "buildsystemjs"], () => {
+task("build", ["buildglobal", "buildnative", "buildcommonjs", "buildsystemjs"], () => {
 
 });
 

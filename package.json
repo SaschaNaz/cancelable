@@ -8,7 +8,8 @@
   "devDependencies": {
     "@types/chai": "^3.4.34",
     "@types/mocha": "^2.2.32",
-    "chai": "^3.5.0"
+    "chai": "^3.5.0",
+    "ts-module-ignore": "^1.0.4"
   },
   "scripts": {
     "pretest": "npm install jake -g; npm install typescript -g; npm install mocha -g",
