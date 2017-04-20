@@ -66,9 +66,9 @@ thenify-all@^1.0.0:
   dependencies:
     any-promise "^1.0.0"
 
-ts-module-ignore@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/ts-module-ignore/-/ts-module-ignore-1.0.4.tgz#102a1b8696edaea0ab9a9b98a5ecb993d10789ee"
+ts-module-ignore@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/ts-module-ignore/-/ts-module-ignore-1.0.5.tgz#7ac8e75fd3fa6304038a9bcfa911b954800bc007"
   dependencies:
     mkdirp "^0.5.1"
     mz "^2.6.0"
