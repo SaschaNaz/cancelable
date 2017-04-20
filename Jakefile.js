@@ -1,5 +1,5 @@
-const ignore = require("ts-module-ignore").default;
 const mz = require("mz/fs");
+const ignore = require("ts-module-ignore").default;
 
 var jakeExecOptionBag = {
     printStdout: true,
