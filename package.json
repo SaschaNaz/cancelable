@@ -13,12 +13,12 @@
     "ts-module-ignore": "^1.0.5"
   },
   "scripts": {
-    "pretest": "npm install jake -g; npm install typescript -g; npm install mocha -g",
+    "pretest": "yarn global add jake typescript mocha",
     "test": "jake test"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SaschaNaz/cancelable.git"
+    "url": "git+https://github.com/SaschaNaz/sn-cancelable.git"
   },
   "keywords": [
     "cancelable"
@@ -26,7 +26,7 @@
   "author": "Kagami Sascha Rosylight <saschanaz@outlook.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/SaschaNaz/cancelable/issues"
+    "url": "https://github.com/SaschaNaz/sn-cancelable/issues"
   },
-  "homepage": "https://github.com/SaschaNaz/cancelable#readme"
+  "homepage": "https://github.com/SaschaNaz/sn-cancelable#readme"
 }
