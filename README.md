@@ -1,4 +1,4 @@
-# cancelable [![Travis-CI build result](https://travis-ci.org/SaschaNaz/es-cancelable.svg?branch=master)](https://travis-ci.org/SaschaNaz/sn-cancelable)
+# cancelable [![Travis-CI build result](https://travis-ci.org/SaschaNaz/sn-cancelable.svg?branch=master)](https://travis-ci.org/SaschaNaz/sn-cancelable)
 This proposal tries replacing cancellation token from [cancelable-promise](https://github.com/domenic/cancelable-promise) with cancellation chain object, to achieve more automatic cancellation propagation.
 
 ###### TODO
