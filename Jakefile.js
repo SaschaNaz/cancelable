@@ -1,5 +1,4 @@
 const mz = require("mz/fs");
-const ignore = require("ts-module-ignore").default;
 
 var jakeExecOptionBag = {
     printStdout: true,
@@ -29,6 +28,7 @@ task("test", ["buildcommonjs", "buildtest"], async () => {
 
 desc("buildglobal");
 task("buildglobal", async () => {
+    const ignore = require("ts-module-ignore").default;
     await ignore("sources/cancelable.ts", "temp/cancelable.ts");
     await mz.writeFile("temp/tsconfig.json", await mz.readFile("sources/tsconfig.json"));
     await asyncExec(["tsc -p temp/ -outDir built/global/"]);
