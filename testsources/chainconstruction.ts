@@ -13,7 +13,7 @@ describe("CancelableChain", () => {
             }
         }
         const chain = new CancelableChain();
-        chain(stub);
+        chain(stub).catch(err => { }); // prevent promise unhandled error
         chain.cancel();
         chai.assert(chain.canceled, ".canceled should be true");
     });

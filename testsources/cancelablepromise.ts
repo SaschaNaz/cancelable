@@ -53,6 +53,7 @@ describe("CancelablePromise", () => {
         const promise2 = CancelablePromise.cancelable(async (chain) => {
             await chain(promise);
         });
+        promise2.catch(err => { }); // prevent promise unhandled error
 
         promise2.cancel();
     });
@@ -83,6 +84,7 @@ describe("CancelablePromise", () => {
         const promise2 = CancelablePromise.cancelable(async (chain) => {
             await chain(promise);
         });
+        promise2.catch(err => { }); // prevent promise unhandled error
 
         promise2.cancel();
     });
@@ -97,9 +99,7 @@ describe("CancelablePromise", () => {
     });
 
     it("should return correct value", done => {
-        const promise = CancelablePromise.cancelable(async (chain) => {
-            return 3;
-        });
+        const promise = CancelablePromise.cancelable(() => 3);
 
         const promise2 = CancelablePromise.cancelable(async (chain) => {
             const value = await chain(promise);
@@ -134,9 +134,9 @@ describe("CancelablePromise", () => {
                 chai.assert(chain.canceled, "chain status should be 'canceled'");
                 done();
             });
-        })
+        });
 
-        chain(promise);
+        chain(promise).catch(err => { }); // prevent promise unhandled error
         chain.cancel();
         canceled = true;
     });
@@ -177,7 +177,7 @@ describe("CancelablePromise", () => {
             await new Promise(() => { });
         })
 
-        const promise2 = CancelablePromise.cancelable(async (chain) => {
+        CancelablePromise.cancelable(async (chain) => {
             chain(promise);
             resolved = true;
         });
@@ -194,11 +194,11 @@ describe("CancelablePromise", () => {
             await new Promise(() => { });
         })
 
-        const promise2 = CancelablePromise.cancelable(async (chain) => {
+        CancelablePromise.cancelable(async (chain) => {
             chain(promise);
             rejected = true;
             throw new Error("This error is a normal testing one");
-        });
+        }).catch(err => { }); // prevent promise unhandled error
     })
 
     it("should not allow assigning on .cancel()", done => {
