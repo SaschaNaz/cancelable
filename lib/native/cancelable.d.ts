@@ -21,7 +21,7 @@ export declare class CancelablePromise<T> extends Promise<T> implements Cancelab
     private _cancelable;
     static cancelable<T>(init: (chain: CancelableChain) => T | Promise<T>): CancelablePromise<T>;
     readonly cancelable: boolean;
-    cancel(): void;
+    cancel: () => void;
 }
 export declare class Cancel {
     message: string;
