@@ -133,10 +133,12 @@ export class CancelablePromise<T> extends Promise<T> implements Cancelable {
         return !!this._cancelable;
     }
 
-    cancel() {
-        this._chain.cancel();
-    }
+    cancel: () => void;
 }
+Object.defineProperty(CancelablePromise.prototype, "cancel", {
+    writable: false,
+    value: function (this: any) { this._chain.cancel(); }
+});
 
 export class Cancel {
     public message: string;

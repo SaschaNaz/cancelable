@@ -4,14 +4,14 @@ import { Cancel, CancelSymbol, CancelableChain, CancelablePromise } from "../bui
 describe("CancelablePromise", () => {
     it("should be resolved", done => {
         const promise = CancelablePromise.cancelable(async (chain) => {
-            
+
         }).then(done);
     });
 
     it("should resolve 'tillCanceled'", done => {
         const promise = CancelablePromise.cancelable(async (chain) => {
             chain.tillCanceled.then(done);
-            await new Promise(() => {});
+            await new Promise(() => { });
         });
 
         const promise2 = CancelablePromise.cancelable(async (chain) => {
@@ -143,20 +143,20 @@ describe("CancelablePromise", () => {
 
     it("should be cancelable", () => {
         const promise = CancelablePromise.cancelable(async (chain) => {
-            await new Promise(() => {});
+            await new Promise(() => { });
         })
         chai.assert(promise.cancelable);
         chai.assert(typeof (promise as any)[CancelSymbol] === "function", "should return cancel function");
     });
 
     it("should not be cancelable", () => {
-        const promise = new CancelablePromise(() => {});
+        const promise = new CancelablePromise(() => { });
         chai.assert(!promise.cancelable);
         chai.assert(typeof (promise as any)[CancelSymbol] === "undefined");
     });
 
     it("should throw when .cancel() is called on uncancelable promise", done => {
-        const promise = new CancelablePromise(() => {});
+        const promise = new CancelablePromise(() => { });
         try {
             promise.cancel();
         }
@@ -174,7 +174,7 @@ describe("CancelablePromise", () => {
                 chai.assert(chain.canceled, "chain status should be 'canceled'");
                 done();
             });
-            await new Promise(() => {});
+            await new Promise(() => { });
         })
 
         const promise2 = CancelablePromise.cancelable(async (chain) => {
@@ -191,7 +191,7 @@ describe("CancelablePromise", () => {
                 chai.assert(chain.canceled, "chain status should be 'canceled'");
                 done();
             });
-            await new Promise(() => {});
+            await new Promise(() => { });
         })
 
         const promise2 = CancelablePromise.cancelable(async (chain) => {
@@ -199,5 +199,18 @@ describe("CancelablePromise", () => {
             rejected = true;
             throw new Error("This error is a normal testing one");
         });
+    })
+
+    it("should not allow assigning on .cancel()", done => {
+        // promise receiver should not be allowed to modify .cancel()
+        // as it may cause unexpected result on other receivers
+        const promise = CancelablePromise.cancelable(async (chain) => { });
+        try {
+            promise.cancel = () => { };
+            done(new Error("should not allow changing .cancel()"))
+        }
+        catch (e) {
+            done();
+        }
     })
 });
