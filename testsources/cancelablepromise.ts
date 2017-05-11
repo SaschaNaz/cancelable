@@ -213,4 +213,39 @@ describe("CancelablePromise", () => {
             done();
         }
     })
+
+    it("should resolve with proper value", () => CancelablePromise.cancelable<number>((chain, manual) => {
+        setTimeout(() => manual.resolve(765), 0);
+        return 961;
+    }, { manual: true }).then(value => {
+        chai.assert.strictEqual(value, 765);
+    }));
+
+    it("should reject with proper value", () => CancelablePromise.cancelable<number>((chain, manual) => {
+        setTimeout(() => manual.reject(346), 0);
+    }, { manual: true }).then(() => {
+        throw new Error("Unexpectedly resolved");
+    }, value => {
+        chai.assert.strictEqual(value, 346);
+    }));
+
+    it("should throw Cancel", () => {
+        const promise = CancelablePromise.cancelable((chain, manual) => {
+            chain.tillCanceled.then(() => manual.reject(new Cancel()));
+        }, { manual: true });
+        promise.cancel();
+        return promise.then(() => {
+            throw new Error("Unexpectedly resolved");
+        }, err => {
+            chai.assert(err instanceof Cancel, "error should be instanceof Cancel")
+        })
+    });
+
+    it("should throw with proper value", () => CancelablePromise.cancelable((chain, manual) => {
+        throw "Architect";
+    }, { manual: true }).then(() => {
+        throw new Error("Unexpectedly resolved");
+    }, value => {
+        chai.assert.strictEqual(value, "Architect");
+    }));
 });

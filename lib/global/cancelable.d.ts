@@ -16,10 +16,17 @@ declare class CancelableChain extends Function {
     readonly tillCanceled: Promise<void>;
     throwIfCanceled(): void;
 }
+interface CancelablePromiseManualController<T> {
+    resolve: (value?: T | PromiseLike<T>) => void;
+    reject: (reason?: any) => void;
+}
 declare class CancelablePromise<T> extends Promise<T> implements Cancelable {
     private _chain;
     private _cancelable;
     static cancelable<T>(init: (chain: CancelableChain) => T | Promise<T>): CancelablePromise<T>;
+    static cancelable<T>(init: (chain: CancelableChain, manual: CancelablePromiseManualController<T>) => void, options: {
+        manual: true;
+    }): CancelablePromise<T>;
     readonly cancelable: boolean;
     cancel: () => void;
 }

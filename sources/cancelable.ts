@@ -94,11 +94,18 @@ export class CancelableChain extends Function {
     }
 }
 
+export interface CancelablePromiseManualController<T> {
+    resolve: (value?: T | PromiseLike<T>) => void;
+    reject: (reason?: any) => void;
+}
+
 export class CancelablePromise<T> extends Promise<T> implements Cancelable {
     private _chain: CancelableChain;
     private _cancelable: boolean;
 
-    static cancelable<T>(init: (chain: CancelableChain) => T | Promise<T>): CancelablePromise<T> {
+    static cancelable<T>(init: (chain: CancelableChain) => T | Promise<T>): CancelablePromise<T>;
+    static cancelable<T>(init: (chain: CancelableChain, manual: CancelablePromiseManualController<T>) => void, options: { manual: true }): CancelablePromise<T>;
+    static cancelable<T>(init: (chain: CancelableChain, manual?: CancelablePromiseManualController<T>) => T | Promise<T>, options: { manual?: true } = {}): CancelablePromise<T> {
         if (!(init instanceof Function)) {
             throw new Error("Input should be a function");
         }
@@ -109,13 +116,18 @@ export class CancelablePromise<T> extends Promise<T> implements Cancelable {
         const chain = new CancelableChain();
 
         const promise = new CancelablePromise<T>((resolve, reject) => {
-            Promise.resolve(init(chain)).then(value => {
-                chain.cancel();
-                resolve(value);
-            }, error => {
-                chain.cancel();
-                reject(error);
-            });
+            if (!options.manual) {
+                Promise.resolve(init(chain)).then(value => {
+                    chain.cancel();
+                    resolve(value);
+                }, error => {
+                    chain.cancel();
+                    reject(error);
+                });
+            }
+            else {
+                Promise.resolve(init(chain, { resolve, reject })).catch(reject);
+            }
         });
         promise._cancelable = true;
         promise._chain = chain;
